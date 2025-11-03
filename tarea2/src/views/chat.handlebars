@@ -1,0 +1,81 @@
+<nav>
+    <button>Sala 1</button>
+    <button>Sala 2</button>
+    <button>Sala 3</button>
+</nav>
+<section id="Messages">
+
+</section>
+<input id="inputMessage" type="text" placeholder="Escribe tu mensaje...">
+<button id="btnSend">Send</button>
+
+
+
+<script>
+    console.log('Cargó la página del chat...');
+    const username = sessionStorage.getItem('username');
+    if(!username){
+        alert('Debes ingresar tu nombre');
+        window.location.href = '/';
+    }
+</script>
+
+<script>
+    
+    let selectedSala = sessionStorage.getItem('sala');
+    const salaButtons = document.querySelectorAll('nav button');
+
+    let connection = false;
+	const socket = io({
+        auth: {
+            username: username
+        }
+    });
+    
+    if(!selectedSala){
+        sessionStorage.setItem('sala', 'Sala 1');
+        selectedSala = "Sala 1";
+        socket.emit('joinSala', {sala: selectedSala});
+    } else{
+        socket.emit('joinSala', {sala: selectedSala});
+    }
+    salaButtons.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            sessionStorage.setItem('sala', `Sala ${idx + 1}`);
+            selectedSala = `Sala ${idx + 1}`;
+            console.log('Sala seleccionada:', selectedSala);
+            socket.emit('joinSala',{sala: selectedSala});
+        });
+    });
+
+
+    socket.on('confirmacion', () => {
+        connection = true
+        console.log('Conectado!');
+    });
+
+    const inputMensagge = document.getElementById('inputMessage');
+    const messagesDiv = document.querySelector('#Messages');
+
+    document.querySelector('#btnSend').addEventListener('click', () => {
+        if(connection){
+            const message = inputMensagge.value;
+
+            socket.emit('sendMessage', {message: message, sala: selectedSala});
+            inputMensagge.value = '';
+
+        } else {
+            console.log('You need to be connected to send messages. Wait a few seconds...')
+        }
+    });
+
+    socket.on('receiveMessage', (data) => {
+        const msgElem = document.createElement('article');
+        //también viene con el username y fecha
+        msgElem.textContent = data.message;
+        messagesDiv.appendChild(msgElem);
+
+
+    })
+</script>
+

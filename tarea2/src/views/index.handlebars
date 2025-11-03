@@ -1,0 +1,20 @@
+<input id="username" placeholder="Ingresa tu nombre..." type="text">
+<button id="btnIngresar">Ingresar</button>
+
+<script>
+    const username = sessionStorage.getItem('username');
+    if(username && username.length != 0){
+        window.location.href = '/chat';
+    }
+    const inputUsername = document.getElementById('username');
+
+    document.getElementById('btnIngresar').addEventListener('click', () => {
+        const username = inputUsername.value;
+        if(username.length < 2){
+            alert('Debe contener al menus 2 caracteres');
+        }else {
+        sessionStorage.setItem('username', username);
+        window.location.href = '/chat';
+        }
+    });
+</script>
