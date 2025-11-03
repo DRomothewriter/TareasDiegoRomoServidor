@@ -1,0 +1,21 @@
+#Messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.my-message {
+    margin-left: auto;
+    margin-right: 0;
+    background: #17a237;
+    text-align: right;
+    max-width: 60%;
+}
+
+.message {
+    margin-left: 0;
+    margin-right: right;
+    background: #17a237;
+    text-align: left;
+    max-width: 60%;
+}

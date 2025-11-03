@@ -24,6 +24,8 @@
     
     let selectedSala = sessionStorage.getItem('sala');
     const salaButtons = document.querySelectorAll('nav button');
+    const messagesDiv = document.querySelector('#Messages');
+    const inputMensagge = document.getElementById('inputMessage');
 
     let connection = false;
 	const socket = io({
@@ -42,9 +44,11 @@
     salaButtons.forEach((btn, idx) => {
         btn.addEventListener('click', () => {
             sessionStorage.setItem('sala', `Sala ${idx + 1}`);
+            const prevSala = selectedSala
             selectedSala = `Sala ${idx + 1}`;
             console.log('Sala seleccionada:', selectedSala);
-            socket.emit('joinSala',{sala: selectedSala});
+            socket.emit('joinSala',{sala: selectedSala, prevSala: prevSala});
+            messagesDiv.innerHTML = '';
         });
     });
 
@@ -54,8 +58,6 @@
         console.log('Conectado!');
     });
 
-    const inputMensagge = document.getElementById('inputMessage');
-    const messagesDiv = document.querySelector('#Messages');
 
     document.querySelector('#btnSend').addEventListener('click', () => {
         if(connection){
@@ -71,11 +73,35 @@
 
     socket.on('receiveMessage', (data) => {
         const msgElem = document.createElement('article');
+        const msgText = document.createElement('p');
+        const msgUser = document.createElement('h3');
+        const msgDate = document.createElement('footer');
+
         //también viene con el username y fecha
-        msgElem.textContent = data.message;
+        msgText.textContent = data.message;
+        msgUser.textContent = data.username;
+        msgDate.textContent = data.timestamp;
+        msgElem.appendChild(msgUser);
+        msgElem.appendChild(msgText);
+        msgElem.appendChild(msgDate);
+        if(data.username === username){
+            msgElem.classList.add('my-message');
+        }else{
+            msgElem.classList.add('message')
+        }
         messagesDiv.appendChild(msgElem);
-
-
     })
+
+    socket.on('userJoined', (data) => {
+        const notificationElem = document.createElement('article');
+        notificationElem.textContent = `${data.username} entró a la sala`;
+        messagesDiv.appendChild(notificationElem);
+    });
+
+    socket.on('userLeaved', (data) => {
+        const notificationElem = document.createElement('article');
+        notificationElem.textContent = `${data.username} salió de la sala`;
+        messagesDiv.appendChild(notificationElem);
+    });
 </script>
 

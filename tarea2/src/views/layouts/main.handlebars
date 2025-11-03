@@ -4,14 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/socket.io/socket.io.js"></script> 
-
+    <link rel="stylesheet" href="/static/styles.css">
     <title>Document</title>
 </head>
 <body>
     <header><span>Mi App</span></header>
+    
     <main>
         {{{body}}}
     </main>
-    <footer>footer</footer>
+    <footer><button>Cerrar sesion</button></footer>
 </body>
+
+<script>
+    const logoutBtn = document.querySelector('footer button')
+    if(!sessionStorage.getItem('username')){
+        logoutBtn.style.display = 'none';
+    }
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('username');
+        window.location.href = '/';
+    })
+</script>
 </html>

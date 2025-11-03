@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 	res.render('index');
 });
 app.get('/chat', (req, res) => {
-    res.render('chat');
+	res.render('chat');
 });
 const server: http.Server = app.listen(port, () => {
 	console.log(`http://localhost:${port}`);
@@ -31,19 +31,28 @@ const io = new Server(server, {
 	},
 });
 
-const connectedUsers = [];
-
 io.on('connection', (socket) => {
 	socket.emit('confirmacion');
 	const username = socket.handshake.auth.username;
+	let currentSala: string | null = null;
+
 	console.log(`Nuevo cliente conectado: ${username}, ${socket.id}`);
 
 	socket.on('disconnect', () => {
+		if(currentSala){
+			io.to(currentSala).emit('userLeaved', { username })
+		}
 		console.log('Cliente desconectado:', socket.id);
 	});
 
 	socket.on('joinSala', (data) => {
+		io.to(data.prevSala).emit('userLeaved', {
+			username: username,
+		});
 		socket.join(data.sala);
+		io.to(data.sala).emit('userJoined', {
+			username: username,
+		});
 	});
 	socket.on('sendMessage', (data) => {
 		const timestamp = new Date().toISOString();
