@@ -1,0 +1,31 @@
+{{#if error}}
+<div class="error">
+    {{error}}
+</div>
+{{/if}}
+
+<form action="/send-letter" method="POST">
+    <div class="form-group">
+        <label for="santaEmail">Correo de Santa:</label>
+        <input 
+            type="email" 
+            id="santaEmail" 
+            name="santaEmail" 
+            placeholder="franciscosevilla@iteso.mx"
+            value="{{santaEmail}}"
+            required
+        >
+    </div>
+    
+    <div class="form-group">
+        <label for="letterContent">Tu carta a Santa:</label>
+        <textarea 
+            id="letterContent" 
+            name="letterContent" 
+            placeholder="Escribe tu carta aquí..."
+            required
+        >{{letterContent}}</textarea>
+    </div>
+    
+    <button type="submit">Enviar Carta</button>
+</form>
